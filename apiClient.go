@@ -98,8 +98,6 @@ func (api *apiClient) getIp() {
 	}
 
 	api.IpAddress = ip.Ip
-	//fmt.Printf("Ip address is %s.\n", api.IpAddress)
-
 }
 
 func (api *apiClient) getLocation() {
@@ -124,14 +122,12 @@ func (api *apiClient) getLocation() {
 	api.Latitude = location.Lat
 	api.Longitude = location.Lon
 	api.Timezone = location.Timezone
-	//fmt.Printf("API %#v.\n", api)
 
 }
 
 func (api *apiClient) getWeather() {
 	var weather weatherResponse
 	endpoint := fmt.Sprintf("%s?temperature_unit=%s&latitude=%f&longitude=%f&timezone=%s&hourly=temperature_2m,weathercode", weatherApiEndpoint, temperatureUnit, api.Latitude, api.Longitude, api.Timezone)
-	fmt.Println(endpoint)
 	resp, requestErr := http.Get(endpoint)
 	if requestErr != nil {
 		log.Fatalln(requestErr)
