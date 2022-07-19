@@ -101,8 +101,6 @@ func (api *apiClient) getLocation() {
 
 func (api *apiClient) getWeather() {
 	var weather weatherResponse
-	dt := time2.Now()
-	fmt.Println(dt.String())
 
 	endpoint := fmt.Sprintf("%s?temperature_unit=%s&latitude=%f&longitude=%f&timezone=%s&hourly=temperature_2m", weatherApiEndpoint, temperatureUnit, api.Latitude, api.Longitude, api.Timezone)
 	fmt.Println(endpoint)
@@ -115,17 +113,32 @@ func (api *apiClient) getWeather() {
 	if bodyReadErr != nil {
 		log.Fatalln(bodyReadErr)
 	}
-	//fmt.Printf("weather body is %v.\n", string(body))
 
 	unmarshallErr := json.Unmarshal(body, &weather)
 	if unmarshallErr != nil {
 		log.Fatalln(unmarshallErr)
 	}
 
+	now := time2.Now()
+	var dataPoints []string
+
 	for i, time := range weather.Hourly.Times {
 		temp := weather.Hourly.Temp[i]
-		fmt.Printf("Weather at %v is %v.\n", time, temp)
+		t := parseTime(string(time), api.Timezone)
+
+		if t.After(now) && len(dataPoints) <= 24 {
+			dataPoints = append(dataPoints, fmt.Sprintf("Weather at %v is %v.\n", time, temp))
+		}
 
 	}
+	fmt.Println(dataPoints)
 
+}
+
+func parseTime(timeString string, location string) time2.Time {
+	loc, _ := time2.LoadLocation(location)
+
+	const layout = "2006-01-02T15:04"
+	t, _ := time2.ParseInLocation(layout, timeString, loc)
+	return t
 }
