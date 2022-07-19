@@ -154,9 +154,9 @@ func (api *apiClient) getWeather() {
 		t := parseTime(string(time), api.Timezone)
 
 		if t.After(now) && len(dataPoints) <= 18 {
-			days = append(days, t.Format("Mon    "))
-			times = append(times, t.Format("03:04PM"))
-			dataPoints = append(dataPoints, fmt.Sprintf("%.1f %s", temp, api.WeatherCodesMap[float32(weatherCode)]))
+			days = append(days, fmt.Sprintf("%-7s", t.Format("Mon")))
+			times = append(times, fmt.Sprintf("%-7s", t.Format("3:04PM")))
+			dataPoints = append(dataPoints, fmt.Sprintf("%.1f %-2s", temp, api.WeatherCodesMap[float32(weatherCode)]))
 		}
 
 	}
